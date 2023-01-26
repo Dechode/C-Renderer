@@ -145,8 +145,7 @@ void initColorTexture(uint32_t *texture)
 
 void initTriangle(uint32_t *vao, uint32_t *vbo)
 {
-	float vertices[] = 
-	{
+	float vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		0.5f, -0.5f, 0.0f,
 		0.0f,  0.5f, 0.0f
@@ -228,16 +227,19 @@ void initRenderer(uint32_t width, uint32_t height, const char* title)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void renderBegin(void){
+void renderBegin(void)
+{
     glClearColor(0.08, 0.1, 0.1, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void renderEnd(void) {
+void renderEnd(void)
+{
     SDL_GL_SwapWindow(window);
 }
 
-void renderQuad(vec2 pos, vec2 size, vec4 color) {
+void renderQuad(vec2 pos, vec2 size, vec4 color) 
+{
     glUseProgram(renderState.shaderDefault);
 
     mat4x4 model;
@@ -274,10 +276,10 @@ void renderTriangle(vec2 pos, vec2 size, vec4 color)
 	glBindVertexArray(0);	
 }
 
-void renderLineSegment(vec2 start, vec2 end, vec4 color)
+void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth)
 {
     glUseProgram(renderState.shaderDefault);
-    glLineWidth(3);
+    glLineWidth(lineWidth);
     
     float x = end[0] - start[0];
     float y = end[1] - start[1];
@@ -301,7 +303,7 @@ void renderLineSegment(vec2 start, vec2 end, vec4 color)
     glBindVertexArray(0);
 }
 
-void renderQuadLine(vec2 pos, vec2 size, vec4 color)
+void renderQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth)
 {
     vec2 points[4] = {
         {pos[0] - size[0] * 0.5, pos[1] - size[1] * 0.5},
@@ -310,10 +312,10 @@ void renderQuadLine(vec2 pos, vec2 size, vec4 color)
         {pos[0] - size[0] * 0.5, pos[1] + size[1] * 0.5},
     };
     
-    renderLineSegment(points[0], points[1], color);
-    renderLineSegment(points[1], points[2], color);
-    renderLineSegment(points[2], points[3], color);
-    renderLineSegment(points[3], points[0], color);
+    renderLineSegment(points[0], points[1], color, lineWidth);
+    renderLineSegment(points[1], points[2], color, lineWidth);
+    renderLineSegment(points[2], points[3], color, lineWidth);
+    renderLineSegment(points[3], points[0], color, lineWidth);
 }
 
 
