@@ -5,7 +5,6 @@ static int shouldQuit = 0;
 
 typedef struct 
 {
-//	vec2 pos;
 	float x,y;
 	vec2 size;
 	vec4 color;
@@ -32,16 +31,17 @@ void gameLoop(void)
 	
 	renderBegin();
 
-	renderQuad((vec2){0,0}, (vec2){60,60}, (vec4){1.0, 1.0, 0.5, 1.0});	
+	renderQuad((vec2){width * 0.5, height * 0.5}, (vec2){60,60}, (vec4){1.0, 1.0, 0.5, 1.0});
+	renderQuad((vec2){width * 0.1, height * 0.9}, (vec2){60,60}, (vec4){1.0, 1.0, 0.5, 1.0});
+	renderTriangle((vec2){width * 0.7, height * 0.6}, (vec2){60,60}, (vec4){1.0, 1.0, 0.4, 1.0});
+
 	renderEnd();
 }
 
 int main(int argc, char* argv[])
 {
 	SDL_Window* window;
-	SCR_RendererInit(800, 600, "Example");
-
-//	testQuad.pos = (vec2){0.0, 0.0};
+	initRenderer(800, 600, "Example");
 
 	while (!shouldQuit)
 	{

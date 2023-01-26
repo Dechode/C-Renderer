@@ -14,6 +14,9 @@ typedef struct
 
     uint32_t lineVao;
     uint32_t lineVbo;
+
+	uint32_t triangleVao;
+	uint32_t triangleVbo;
     
     uint32_t shaderDefault;
     uint32_t colorTexture;
@@ -26,14 +29,15 @@ uint32_t width = 800;
 uint32_t height = 600;
 static SDL_Window* window;
 
-SDL_Window* SCR_InitWindow(uint32_t width, uint32_t height, const char* title)
+SDL_Window* initWindow(uint32_t width, uint32_t height, const char* title)
 {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) 
+	{
         printf("Could not init SDL!: %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
@@ -60,7 +64,7 @@ SDL_Window* SCR_InitWindow(uint32_t width, uint32_t height, const char* title)
     return window;
 }
 
-uint32_t SCR_CreateShader(const char *pathFrag, const char *pathVert) 
+uint32_t createShader(const char *pathFrag, const char *pathVert) 
 {
     int success;
     char log[512];
@@ -119,9 +123,9 @@ uint32_t SCR_CreateShader(const char *pathFrag, const char *pathVert)
     return shader;
 }
 
-void SCR_InitShaders(RenderState *state) 
+void initShaders(RenderState *state) 
 {
-    state->shaderDefault = SCR_CreateShader("shaders/default.frag", "shaders/default.vert");
+    state->shaderDefault = createShader("shaders/default.frag.glsl", "shaders/default.vert.glsl");
 
     mat4x4_ortho(state->projection, 0, width, 0, height, -2, 2);
 
@@ -129,7 +133,7 @@ void SCR_InitShaders(RenderState *state)
     glUniformMatrix4fv(glGetUniformLocation(state->shaderDefault, "projection"), 1, GL_FALSE, &state->projection[0][0]);
 }
 
-void SCR_InitColorTexture(uint32_t *texture) 
+void initColorTexture(uint32_t *texture) 
 {
     glGenTextures(1, texture);
     glBindTexture(GL_TEXTURE_2D, *texture);
@@ -139,7 +143,30 @@ void SCR_InitColorTexture(uint32_t *texture)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void SCR_InitQuad(uint32_t *vao, uint32_t *vbo, uint32_t *ebo)
+void initTriangle(uint32_t *vao, uint32_t *vbo)
+{
+	float vertices[] = 
+	{
+		-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		0.0f,  0.5f, 0.0f
+	};
+	
+	glGenVertexArrays(1, vao);
+	glGenBuffers(1, vbo);
+	glBindVertexArray(*vao);
+	glBindBuffer(GL_ARRAY_BUFFER, *vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);  
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+}
+
+void initQuad(uint32_t *vao, uint32_t *vbo, uint32_t *ebo)
 {
     float vertices[] = {
         0.5, 0.5, 0, 0, 0,
@@ -172,7 +199,7 @@ void SCR_InitQuad(uint32_t *vao, uint32_t *vbo, uint32_t *ebo)
     glad_glEnableVertexAttribArray(1);
 }
 
-void SCR_InitLine(uint32_t *vao, uint32_t *vbo)
+void initLine(uint32_t *vao, uint32_t *vbo)
 {
     glGenVertexArrays(1, vao);
     glBindVertexArray(*vao);
@@ -188,13 +215,14 @@ void SCR_InitLine(uint32_t *vao, uint32_t *vbo)
     glBindVertexArray(0);
 }
 
-void SCR_RendererInit(uint32_t width, uint32_t height, const char* title)
+void initRenderer(uint32_t width, uint32_t height, const char* title)
 {
-	window = SCR_InitWindow(width, height, title);
-	SCR_InitQuad(&renderState.quadVao, &renderState.quadVbo, &renderState.quadEbo);
-    SCR_InitLine(&renderState.lineVao, &renderState.lineVbo);
-    SCR_InitShaders(&renderState);
-    SCR_InitColorTexture(&renderState.colorTexture);
+	window = initWindow(width, height, title);
+	initTriangle(&renderState.triangleVao, &renderState.triangleVbo);
+	initQuad(&renderState.quadVao, &renderState.quadVbo, &renderState.quadEbo);
+    initLine(&renderState.lineVao, &renderState.lineVbo);
+    initShaders(&renderState);
+    initColorTexture(&renderState.colorTexture);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -227,6 +255,23 @@ void renderQuad(vec2 pos, vec2 size, vec4 color) {
 //    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
+}
+
+void renderTriangle(vec2 pos, vec2 size, vec4 color)
+{
+	glUseProgram(renderState.shaderDefault);
+	mat4x4 model;
+    mat4x4_identity(model);
+
+    mat4x4_translate(model, pos[0], pos[1], 0);
+    mat4x4_scale_aniso(model, model, size[0], size[1], 1);
+
+    glUniformMatrix4fv(glGetUniformLocation(renderState.shaderDefault, "model"), 1, GL_FALSE, &model[0][0]);
+    glUniform4fv(glGetUniformLocation(renderState.shaderDefault, "color"),1, color);
+	glBindVertexArray(renderState.triangleVao);
+	glBindTexture(GL_TEXTURE_2D, renderState.colorTexture);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);	
 }
 
 void renderLineSegment(vec2 start, vec2 end, vec4 color)
