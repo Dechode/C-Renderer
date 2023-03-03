@@ -1,5 +1,5 @@
 #include "stdio.h"
-#include "../renderer.c"
+#include "../renderer.h"
 
 static int shouldQuit = 0;
 
@@ -14,6 +14,8 @@ Quad testQuad;
 
 void gameLoop(void)
 {
+	testQuad.x = width * 0.5;
+	testQuad.y = height * 0.5;
 	// Poll events 
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -31,7 +33,7 @@ void gameLoop(void)
 	
 	renderBegin();
 
-	renderQuad((vec2){width * 0.5, height * 0.5}, (vec2){60,60}, (vec4){1.0, 1.0, 0.5, 1.0});
+	renderQuad((vec2){testQuad.x, testQuad.y}, (vec2){60,60}, (vec4){1.0, 1.0, 0.5, 1.0});
 	renderQuad((vec2){width * 0.1, height * 0.9}, (vec2){60,60}, (vec4){1.0, 1.0, 0.5, 1.0});
 	renderTriangle((vec2){width * 0.7, height * 0.6}, (vec2){60,60}, (vec4){1.0, 1.0, 0.4, 1.0});
 

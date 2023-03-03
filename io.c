@@ -61,7 +61,7 @@ File ioReadFile(const char *path){
     return file;
 }
 
-int ioFileWrite(void *buffer, size_t size, const char *path) {
+int ioFileWrite(void *buffer, size_t size, const char* path) {
     FILE *fp = fopen(path, "wb");
     if (!fp || ferror(fp)) {
         printf("Cannot write file: %s.\n", path);
