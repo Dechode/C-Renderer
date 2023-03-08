@@ -38,7 +38,13 @@ typedef struct
 	int numChannels;
 } ImageTexture;
 
-RenderState2D renderState;
+typedef struct
+{
+	vec3 position;
+	ImageTexture texture;
+} Sprite;
+
+static RenderState2D renderState;
 uint32_t width = 800;
 uint32_t height = 600;
 static SDL_Window* window;
@@ -354,10 +360,10 @@ void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth)
 void renderQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth)
 {
     vec2 points[4] = {
-        {pos[0] - size[0] * 0.5, pos[1] - size[1] * 0.5},
-        {pos[0] + size[0] * 0.5, pos[1] - size[1] * 0.5},
-        {pos[0] + size[0] * 0.5, pos[1] + size[1] * 0.5},
-        {pos[0] - size[0] * 0.5, pos[1] + size[1] * 0.5},
+        {pos[0] - size[0] * 0.5f, pos[1] - size[1] * 0.5},
+        {pos[0] + size[0] * 0.5f, pos[1] - size[1] * 0.5},
+        {pos[0] + size[0] * 0.5f, pos[1] + size[1] * 0.5},
+        {pos[0] - size[0] * 0.5f, pos[1] + size[1] * 0.5},
     };
     
     renderLineSegment(points[0], points[1], color, lineWidth);
