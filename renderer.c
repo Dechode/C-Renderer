@@ -102,7 +102,7 @@ uint32_t createShader(const char *pathFrag, const char *pathVert)
     return shader;
 }
 
-void createImageTexture(ImageTexture* imgTex, const char* path)
+void initImageTexture(ImageTexture* imgTex, const char* path)
 {
 	imgTex->textureData = NULL;
 	imgTex->width = 0;
@@ -153,6 +153,11 @@ void initColorTexture(uint32_t* texture)
     uint8_t solidWhite[4] = {255,255,255,255};
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, solidWhite);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void initSprite(ImageTexture* texture, uint32_t width, uint32_t height)
+{
+	//
 }
 
 void initTriangle(uint32_t *vao, uint32_t *vbo)
