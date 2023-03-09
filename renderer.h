@@ -45,18 +45,16 @@ typedef struct
 	ImageTexture texture;
 } Sprite;
 
-static RenderState2D renderState;
-static SDL_Window* window;
-
-SDL_Window* initWindow(uint32_t width, uint32_t height, const char* title);
+//static SDL_Window* window;
 
 uint32_t createShader(const char *pathFrag, const char *pathVert); 
 
-void initRenderer(uint32_t width, uint32_t height, const char* title);
+SDL_Window* initWindow(uint32_t width, uint32_t height, const char* title);
+void initRenderer(void);
 
 void initShaders(RenderState2D *state);
 void initColorTexture(uint32_t* texture); 
-void initSprite(ImageTexture* texture, uint32_t width, uint32_t height);
+void initSprite(Sprite* sprite, ImageTexture* texture, uint32_t width, uint32_t height, vec3 pos);
 void initImageTexture(ImageTexture* imgTex, const char* path);
 
 void initTriangle(uint32_t *vao, uint32_t *vbo);
@@ -64,7 +62,7 @@ void initQuad(uint32_t *vao, uint32_t *vbo, uint32_t *ebo);
 void initLine(uint32_t *vao, uint32_t *vbo);
 
 void renderBegin(void);
-void renderEnd(void);
+void renderEnd(SDL_Window* window);
 void renderQuad(vec2 pos, vec2 size, vec4 color); 
 void renderTriangle(vec2 pos, vec2 size, vec4 color);
 void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth);

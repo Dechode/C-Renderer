@@ -1,7 +1,11 @@
 #include "renderer.h"
+#include <SDL2/SDL_video.h>
+#include <string.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+static RenderState2D renderState;
 
 SDL_Window* initWindow(uint32_t width, uint32_t height, const char* title)
 {
@@ -155,9 +159,13 @@ void initColorTexture(uint32_t* texture)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void initSprite(ImageTexture* texture, uint32_t width, uint32_t height)
+void initSprite(Sprite* sprite, ImageTexture* texture, uint32_t width, uint32_t height, vec3 pos)
 {
-	//
+
+	sprite->width = width;
+	sprite->height = height;
+	memcpy(pos, sprite->position, sizeof(sprite->position));
+//	sprite.position = pos;
 }
 
 void initTriangle(uint32_t *vao, uint32_t *vbo)
@@ -230,9 +238,9 @@ void initLine(uint32_t *vao, uint32_t *vbo)
     glBindVertexArray(0);
 }
 
-void initRenderer(uint32_t width, uint32_t height, const char* title)
+void initRenderer(void)
 {
-	window = initWindow(width, height, title);
+//	window = initWindow(width, height, title);
 	initTriangle(&renderState.triangleVao, &renderState.triangleVbo);
 	initQuad(&renderState.quadVao, &renderState.quadVbo, &renderState.quadEbo);
     initLine(&renderState.lineVao, &renderState.lineVbo);
@@ -249,7 +257,7 @@ void renderBegin(void)
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void renderEnd(void)
+void renderEnd(SDL_Window* window)
 {
     SDL_GL_SwapWindow(window);
 }

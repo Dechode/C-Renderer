@@ -22,7 +22,7 @@ void handleEvents(SDL_Event* event)
     }
 }
 
-void gameLoop(void)
+void gameLoop(SDL_Window* window)
 {
 	Sprite sprite;
 	sprite.width = 60;
@@ -39,17 +39,18 @@ void gameLoop(void)
 	renderQuad((vec2){WIDTH * 0.1, HEIGHT * 0.9}, (vec2){60,60}, (vec4){1.0, 1.0, 0.5, 1.0});
 	renderTriangle((vec2){WIDTH * 0.7, HEIGHT * 0.6}, (vec2){60,60}, (vec4){1.0, 1.0, 0.4, 1.0});
 
-	renderEnd();
+	renderEnd(window);
 }
 
 int main(int argc, char* argv[])
 {
 	SDL_Window* window;
-	initRenderer(800, 600, "Example");
+	window = initWindow(800, 600, "Example");
+	initRenderer();
 
 	while (!shouldQuit)
 	{
-		gameLoop();
+		gameLoop(window);
 	}
 }
 
