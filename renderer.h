@@ -44,6 +44,7 @@ typedef struct
 {
 	vec3 position;
 	vec2 size;
+	vec2 scale;
 	ImageTexture texture;
 } Sprite;
 
@@ -54,7 +55,7 @@ void initRenderer(void);
 
 void initShaders(RenderState2D *state);
 void initColorTexture(uint32_t* texture); 
-void initSprite(Sprite* sprite, const char* texturePath ,vec3 pos);
+void initSprite(Sprite* sprite, const char* texturePath ,vec3 pos, vec2 scale);
 void initImageTexture(ImageTexture* texture, const char* path);
 
 void initTriangle(uint32_t *vao, uint32_t *vbo);

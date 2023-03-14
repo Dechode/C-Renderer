@@ -26,7 +26,7 @@ void handleEvents(SDL_Event* event)
 void gameLoop(SDL_Window* window)
 {
 	Sprite sprite;
-	initSprite(&sprite, "textures/car16x16.png", (vec3){0.5f * WIDTH, 0.5f * HEIGHT, 0.0f});
+	initSprite(&sprite, "textures/car16x16.png", (vec3){0.5f * WIDTH, 0.5f * HEIGHT, 0.0f}, (vec2){10.0, 10.0});
 //	printf("(%2.2f, %2.2f, %2.2f)", sprite.position[0], sprite.position[1],sprite.position[2]);
 
 	SDL_Event event;

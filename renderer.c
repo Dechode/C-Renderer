@@ -1,4 +1,5 @@
 #include "renderer.h"
+#include "glad/glad.h"
 #include <SDL2/SDL_video.h>
 #include <stdint.h>
 #include <string.h>
@@ -140,8 +141,8 @@ void initImageTexture(ImageTexture* imageTexture, const char* path)
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, imageTexture->width, imageTexture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageTexture->textureData);
@@ -161,12 +162,16 @@ void initColorTexture(uint32_t* texture)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void initSprite(Sprite* sprite, const char* texturePath, vec3 pos)
+void initSprite(Sprite* sprite, const char* texturePath, vec3 pos, vec2 scale)
 {
 	initImageTexture(&sprite->texture, texturePath);
-	sprite->size[0] = sprite->texture.width;
-	sprite->size[1] = sprite->texture.height;
-//	memcpy(pos, sprite->position, sizeof(sprite->position));
+
+	sprite->scale[0] = scale[0];
+	sprite->scale[1] = scale[1];
+
+	sprite->size[0] = (int) sprite->texture.width * scale[0];
+	sprite->size[1] = (int)sprite->texture.height * scale[1];
+
 	sprite->position[0] = pos[0];
 	sprite->position[1] = pos[1];
 	sprite->position[2] = pos[2];
