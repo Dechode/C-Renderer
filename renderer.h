@@ -7,6 +7,7 @@
 #include "stdlib.h"
 #include "io.h"
 #include <stdint.h>
+#include <sys/types.h>
 
 typedef struct 
 {
@@ -23,8 +24,9 @@ typedef struct
 	uint32_t windowWidth;
 	uint32_t windowHeight;
     
-    uint32_t shaderDefault;
-    uint32_t colorTexture;
+    uint32_t defaultShader;
+	uint32_t defaultTexture;
+
     mat4x4 projection;
 
 } RenderState2D;
@@ -41,11 +43,9 @@ typedef struct
 typedef struct
 {
 	vec3 position;
-	int width,  height;
+	vec2 size;
 	ImageTexture texture;
 } Sprite;
-
-//static SDL_Window* window;
 
 uint32_t createShader(const char *pathFrag, const char *pathVert); 
 
@@ -54,8 +54,8 @@ void initRenderer(void);
 
 void initShaders(RenderState2D *state);
 void initColorTexture(uint32_t* texture); 
-void initSprite(Sprite* sprite, ImageTexture* texture, uint32_t width, uint32_t height, vec3 pos);
-void initImageTexture(ImageTexture* imgTex, const char* path);
+void initSprite(Sprite* sprite, const char* texturePath ,vec3 pos);
+void initImageTexture(ImageTexture* texture, const char* path);
 
 void initTriangle(uint32_t *vao, uint32_t *vbo);
 void initQuad(uint32_t *vao, uint32_t *vbo, uint32_t *ebo);
@@ -63,8 +63,11 @@ void initLine(uint32_t *vao, uint32_t *vbo);
 
 void renderBegin(void);
 void renderEnd(SDL_Window* window);
-void renderQuad(vec2 pos, vec2 size, vec4 color); 
+
+void renderQuad(uint32_t texture, uint32_t* shader, vec2 pos, vec2 size, vec4 color); 
 void renderTriangle(vec2 pos, vec2 size, vec4 color);
 void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth);
 void renderQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth);
+
+void drawSprite(Sprite* sprite);
 

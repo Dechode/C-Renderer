@@ -1,5 +1,6 @@
 #include "renderer.h"
 #include <SDL2/SDL_video.h>
+#include <stdint.h>
 #include <string.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -106,47 +107,48 @@ uint32_t createShader(const char *pathFrag, const char *pathVert)
     return shader;
 }
 
-void initImageTexture(ImageTexture* imgTex, const char* path)
+void initShaders(RenderState2D *state)
 {
-	imgTex->textureData = NULL;
-	imgTex->width = 0;
-	imgTex->height = 0;
-	imgTex->numChannels = 0;
+    state->defaultShader = createShader("shaders/default.frag.glsl", "shaders/default.vert.glsl");
+
+    mat4x4_ortho(state->projection, 0, state->windowWidth, 0, state->windowHeight, -2, 2);
+
+    glUseProgram(state->defaultShader);
+    glUniformMatrix4fv(glGetUniformLocation(state->defaultShader, "projection"), 1, GL_FALSE, &state->projection[0][0]);
+}
+
+void initImageTexture(ImageTexture* imageTexture, const char* path)
+{
+	imageTexture->textureData = NULL;
+	imageTexture->width = 0;
+	imageTexture->height = 0;
+	imageTexture->numChannels = 0;
 
 	stbi_set_flip_vertically_on_load(1);
-	imgTex->textureData = stbi_load(path, &imgTex->width, &imgTex->height, &imgTex->numChannels, 0);
+	imageTexture->textureData = stbi_load(path, &imageTexture->width, &imageTexture->height, &imageTexture->numChannels, 0);
 
-	glGenTextures(1, &imgTex->texture);
+	if (!imageTexture->textureData)
+	{
+		puts("ERROR: Could not load image");
+		return;
+	}
+
+	glGenTextures(1, &imageTexture->texture);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindTexture(GL_TEXTURE_2D, imgTex->texture);
+	glBindTexture(GL_TEXTURE_2D, imageTexture->texture);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	if (!imgTex->textureData)
-	{
-		puts("ERROR: Could not load image");
-		return;
-	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, imgTex->width, imgTex->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imgTex->textureData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, imageTexture->width, imageTexture->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageTexture->textureData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	stbi_image_free(imgTex->textureData);
-}
-
-void initShaders(RenderState2D *state)
-{
-    state->shaderDefault = createShader("shaders/default.frag.glsl", "shaders/default.vert.glsl");
-
-    mat4x4_ortho(state->projection, 0, state->windowWidth, 0, state->windowHeight, -2, 2);
-
-    glUseProgram(state->shaderDefault);
-    glUniformMatrix4fv(glGetUniformLocation(state->shaderDefault, "projection"), 1, GL_FALSE, &state->projection[0][0]);
+	stbi_image_free(imageTexture->textureData);
 }
 
 void initColorTexture(uint32_t* texture)
@@ -159,13 +161,15 @@ void initColorTexture(uint32_t* texture)
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void initSprite(Sprite* sprite, ImageTexture* texture, uint32_t width, uint32_t height, vec3 pos)
+void initSprite(Sprite* sprite, const char* texturePath, vec3 pos)
 {
-
-	sprite->width = width;
-	sprite->height = height;
-	memcpy(pos, sprite->position, sizeof(sprite->position));
-//	sprite.position = pos;
+	initImageTexture(&sprite->texture, texturePath);
+	sprite->size[0] = sprite->texture.width;
+	sprite->size[1] = sprite->texture.height;
+//	memcpy(pos, sprite->position, sizeof(sprite->position));
+	sprite->position[0] = pos[0];
+	sprite->position[1] = pos[1];
+	sprite->position[2] = pos[2];
 }
 
 void initTriangle(uint32_t *vao, uint32_t *vbo)
@@ -240,12 +244,11 @@ void initLine(uint32_t *vao, uint32_t *vbo)
 
 void initRenderer(void)
 {
-//	window = initWindow(width, height, title);
 	initTriangle(&renderState.triangleVao, &renderState.triangleVbo);
 	initQuad(&renderState.quadVao, &renderState.quadVbo, &renderState.quadEbo);
     initLine(&renderState.lineVao, &renderState.lineVbo);
     initShaders(&renderState);
-    initColorTexture(&renderState.colorTexture);
+    initColorTexture(&renderState.defaultTexture);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -262,9 +265,9 @@ void renderEnd(SDL_Window* window)
     SDL_GL_SwapWindow(window);
 }
 
-void renderQuad(vec2 pos, vec2 size, vec4 color)
+void renderQuad(uint32_t texture, uint32_t* shader, vec2 pos, vec2 size, vec4 color)
 {
-    glUseProgram(renderState.shaderDefault);
+    glUseProgram(*shader);
 
     mat4x4 model;
     mat4x4_identity(model);
@@ -272,37 +275,36 @@ void renderQuad(vec2 pos, vec2 size, vec4 color)
     mat4x4_translate(model, pos[0], pos[1], 0);
     mat4x4_scale_aniso(model, model, size[0], size[1], 1);
 
-    glUniformMatrix4fv(glGetUniformLocation(renderState.shaderDefault, "model"), 1, GL_FALSE, &model[0][0]);
-    glUniform4fv(glGetUniformLocation(renderState.shaderDefault, "color"),1, color);
+    glUniformMatrix4fv(glGetUniformLocation(*shader, "model"), 1, GL_FALSE, &model[0][0]);
+    glUniform4fv(glGetUniformLocation(*shader, "color"),1, color);
 
     glBindVertexArray(renderState.quadVao);
-    glBindTexture(GL_TEXTURE_2D, renderState.colorTexture);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
     glBindVertexArray(0);
 }
 
 void renderTriangle(vec2 pos, vec2 size, vec4 color)
 {
-	glUseProgram(renderState.shaderDefault);
+	glUseProgram(renderState.defaultShader);
 	mat4x4 model;
     mat4x4_identity(model);
 
     mat4x4_translate(model, pos[0], pos[1], 0);
     mat4x4_scale_aniso(model, model, size[0], size[1], 1);
 
-    glUniformMatrix4fv(glGetUniformLocation(renderState.shaderDefault, "model"), 1, GL_FALSE, &model[0][0]);
-    glUniform4fv(glGetUniformLocation(renderState.shaderDefault, "color"),1, color);
+    glUniformMatrix4fv(glGetUniformLocation(renderState.defaultShader, "model"), 1, GL_FALSE, &model[0][0]);
+    glUniform4fv(glGetUniformLocation(renderState.defaultShader, "color"),1, color);
 	glBindVertexArray(renderState.triangleVao);
-	glBindTexture(GL_TEXTURE_2D, renderState.colorTexture);
+	glBindTexture(GL_TEXTURE_2D, renderState.defaultTexture);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
 }
 
 void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth)
 {
-    glUseProgram(renderState.shaderDefault);
+    glUseProgram(renderState.defaultShader);
     glLineWidth(lineWidth);
 
     float x = end[0] - start[0];
@@ -312,12 +314,11 @@ void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth)
     mat4x4 model;
     mat4x4_translate(model, start[0], start[1], 0);
 
-    glUniformMatrix4fv(glGetUniformLocation(
-                    renderState.shaderDefault, "model"),
-                    1, GL_FALSE, &model[0][0]);
-    glUniform4fv(glGetUniformLocation(renderState.shaderDefault, "color"), 1, color);
+    glUniformMatrix4fv(glGetUniformLocation(renderState.defaultShader, "model"),
+											1, GL_FALSE, &model[0][0]);
+    glUniform4fv(glGetUniformLocation(renderState.defaultShader, "color"), 1, color);
 
-    glBindTexture(GL_TEXTURE_2D, renderState.colorTexture);
+    glBindTexture(GL_TEXTURE_2D, renderState.defaultTexture);
     glBindVertexArray(renderState.lineVao);
 
     glBindBuffer(GL_ARRAY_BUFFER, renderState.lineVbo);
@@ -340,6 +341,14 @@ void renderQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth)
     renderLineSegment(points[1], points[2], color, lineWidth);
     renderLineSegment(points[2], points[3], color, lineWidth);
     renderLineSegment(points[3], points[0], color, lineWidth);
+}
+
+void drawSprite(Sprite* sprite)
+{
+	vec2 pos;
+	pos[0] = sprite->position[0];
+	pos[1] = sprite->position[1];
+	renderQuad(sprite->texture.texture, &renderState.defaultShader, pos, sprite->size, (vec4){1.0, 1.0, 1.0, 1.0});
 }
 
 
