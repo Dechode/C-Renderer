@@ -65,11 +65,11 @@ void initLine(uint32_t *vao, uint32_t *vbo);
 void renderBegin(void);
 void renderEnd(SDL_Window *window);
 
-void renderQuad(int32_t texture, int32_t shader, vec3 pos, float rotation,
+void drawQuad(int32_t texture, int32_t shader, vec3 pos, float rotation,
                 vec2 size, vec4 color);
-void renderTriangle(vec2 pos, float rotation, vec2 size, vec4 color);
-void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth);
-void renderQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth);
+void drawTriangle(vec2 pos, float rotation, vec2 size, vec4 color);
+void drawLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth);
+void drawQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth);
 
 void drawSprite(Sprite *sprite);
 void drawCircle(vec3 pos, float radius, vec4 color);

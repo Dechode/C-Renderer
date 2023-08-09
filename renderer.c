@@ -260,7 +260,7 @@ void renderBegin(void) {
 
 void renderEnd(SDL_Window *window) { SDL_GL_SwapWindow(window); }
 
-void renderQuad(int32_t texture, int32_t shader, vec3 pos, float rotation,
+void drawQuad(int32_t texture, int32_t shader, vec3 pos, float rotation,
                 vec2 size, vec4 color) {
 
   if (shader <= 0) {
@@ -289,7 +289,7 @@ void renderQuad(int32_t texture, int32_t shader, vec3 pos, float rotation,
   glBindVertexArray(0);
 }
 
-void renderTriangle(vec2 pos, float rotation, vec2 size, vec4 color) {
+void drawTriangle(vec2 pos, float rotation, vec2 size, vec4 color) {
   glUseProgram(renderState.defaultShader);
   mat4x4 model;
   mat4x4_identity(model);
@@ -308,7 +308,7 @@ void renderTriangle(vec2 pos, float rotation, vec2 size, vec4 color) {
   glBindVertexArray(0);
 }
 
-void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth) {
+void drawLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth) {
   glUseProgram(renderState.defaultShader);
   glLineWidth(lineWidth);
 
@@ -334,7 +334,7 @@ void renderLineSegment(vec2 start, vec2 end, vec4 color, int lineWidth) {
   glBindVertexArray(0);
 }
 
-void renderQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth) {
+void drawQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth) {
   vec2 points[4] = {
       {pos[0] - size[0] * 0.5f, pos[1] - size[1] * 0.5},
       {pos[0] + size[0] * 0.5f, pos[1] - size[1] * 0.5},
@@ -342,20 +342,20 @@ void renderQuadLine(vec2 pos, vec2 size, vec4 color, int lineWidth) {
       {pos[0] - size[0] * 0.5f, pos[1] + size[1] * 0.5},
   };
 
-  renderLineSegment(points[0], points[1], color, lineWidth);
-  renderLineSegment(points[1], points[2], color, lineWidth);
-  renderLineSegment(points[2], points[3], color, lineWidth);
-  renderLineSegment(points[3], points[0], color, lineWidth);
+  drawLineSegment(points[0], points[1], color, lineWidth);
+  drawLineSegment(points[1], points[2], color, lineWidth);
+  drawLineSegment(points[2], points[3], color, lineWidth);
+  drawLineSegment(points[3], points[0], color, lineWidth);
 }
 
 void drawSprite(Sprite *sprite) {
-  renderQuad(sprite->texture.texture, renderState.defaultShader,
+  drawQuad(sprite->texture.texture, renderState.defaultShader,
              sprite->position, sprite->rotation, sprite->size,
              (vec4){1.0, 1.0, 1.0, 1.0});
 }
 
 void drawCircle(vec3 pos, float radius, vec4 color) {
   vec2 size = {2.0f * radius, 2.0f * radius};
-  renderQuad(renderState.defaultTexture, renderState.circleShader, pos, 0, size,
+  drawQuad(renderState.defaultTexture, renderState.circleShader, pos, 0, size,
              color);
 }
