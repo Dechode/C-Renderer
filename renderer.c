@@ -289,12 +289,13 @@ void renderQuad(int32_t texture, int32_t shader, vec3 pos, float rotation,
   glBindVertexArray(0);
 }
 
-void renderTriangle(vec2 pos, vec2 size, vec4 color) {
+void renderTriangle(vec2 pos, float rotation, vec2 size, vec4 color) {
   glUseProgram(renderState.defaultShader);
   mat4x4 model;
   mat4x4_identity(model);
 
   mat4x4_translate(model, pos[0], pos[1], 0);
+  mat4x4_rotate(model, model, 0.0f, 0.0f, 1.0f, rotation);
   mat4x4_scale_aniso(model, model, size[0], size[1], 1);
 
   glUniformMatrix4fv(glGetUniformLocation(renderState.defaultShader, "model"),
@@ -355,6 +356,6 @@ void drawSprite(Sprite *sprite) {
 
 void drawCircle(vec3 pos, float radius, vec4 color) {
   vec2 size = {2.0f * radius, 2.0f * radius};
-  renderQuad(renderState.defaultTexture, renderState.circleShader, pos, 0, size, color);
+  renderQuad(renderState.defaultTexture, renderState.circleShader, pos, 0, size,
+             color);
 }
-

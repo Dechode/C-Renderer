@@ -26,6 +26,8 @@ void gameLoop(SDL_Window *window) {
              (vec3){0.5f * WIDTH, 0.5f * HEIGHT, 0.0f}, 0.0f,
              (vec2){10.0, 10.0});
 
+  float triRot = 0.0f;
+
   while (!shouldQuit) {
     SDL_Event event;
     handleEvents(&event);
@@ -33,9 +35,10 @@ void gameLoop(SDL_Window *window) {
     renderBegin();
 
     sprite.rotation += 0.01f;
+    triRot += 0.02f;
     
     drawSprite(&sprite);
-    renderTriangle((vec2){WIDTH * 0.7, HEIGHT * 0.6}, (vec2){60, 60},
+    renderTriangle((vec2){WIDTH * 0.7, HEIGHT * 0.6}, triRot, (vec2){60, 60},
                    (vec4){1.0, 1.0, 0.4, 1.0});
     drawCircle((vec3){50.0f, 100.0f, 0.0f}, 40.0f, (vec4){1.0f, 1.0f, 1.0f, 1.0f});
 
