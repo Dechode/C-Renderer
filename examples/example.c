@@ -37,6 +37,7 @@ void gameLoop(SDL_Window *window) {
     drawSprite(&sprite);
     renderTriangle((vec2){WIDTH * 0.7, HEIGHT * 0.6}, (vec2){60, 60},
                    (vec4){1.0, 1.0, 0.4, 1.0});
+    drawCircle((vec3){50.0f, 100.0f, 0.0f}, 40.0f, (vec4){1.0f, 1.0f, 1.0f, 1.0f});
 
     renderEnd(window);
   }

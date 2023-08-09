@@ -100,16 +100,25 @@ uint32_t createShader(const char *pathFrag, const char *pathVert) {
   return shader;
 }
 
-void initShaders(RenderState2D *state) {
-  state->defaultShader =
+void initShaders(void) {
+  renderState.defaultShader =
       createShader("shaders/default.frag.glsl", "shaders/default.vert.glsl");
 
-  mat4x4_ortho(state->projection, 0, state->windowWidth, 0, state->windowHeight,
-               -2, 2);
+  renderState.circleShader =
+      createShader("shaders/circle.frag.glsl", "shaders/circle.vert.glsl");
 
-  glUseProgram(state->defaultShader);
-  glUniformMatrix4fv(glGetUniformLocation(state->defaultShader, "projection"),
-                     1, GL_FALSE, &state->projection[0][0]);
+  mat4x4_ortho(renderState.projection, 0, renderState.windowWidth, 0,
+               renderState.windowHeight, -2, 2);
+
+  glUseProgram(renderState.defaultShader);
+  glUniformMatrix4fv(
+      glGetUniformLocation(renderState.defaultShader, "projection"), 1,
+      GL_FALSE, &renderState.projection[0][0]);
+
+  glUseProgram(renderState.circleShader);
+  glUniformMatrix4fv(
+      glGetUniformLocation(renderState.circleShader, "projection"), 1, GL_FALSE,
+      &renderState.projection[0][0]);
 }
 
 void initImageTexture(ImageTexture *imageTexture, const char *path) {
@@ -237,7 +246,7 @@ void initRenderer(void) {
   initTriangle(&renderState.triangleVao, &renderState.triangleVbo);
   initQuad(&renderState.quadVao, &renderState.quadVbo, &renderState.quadEbo);
   initLine(&renderState.lineVao, &renderState.lineVbo);
-  initShaders(&renderState);
+  initShaders();
   initColorTexture(&renderState.defaultTexture);
 
   glEnable(GL_BLEND);
@@ -343,3 +352,9 @@ void drawSprite(Sprite *sprite) {
              sprite->position, sprite->rotation, sprite->size,
              (vec4){1.0, 1.0, 1.0, 1.0});
 }
+
+void drawCircle(vec3 pos, float radius, vec4 color) {
+  vec2 size = {2.0f * radius, 2.0f * radius};
+  renderQuad(renderState.defaultTexture, renderState.circleShader, pos, 0, size, color);
+}
+
