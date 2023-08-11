@@ -1,3 +1,4 @@
+#include "../window.h"
 #include "../colors.h"
 #include "../mesh.h"
 #include "../primitives_3d.h"
@@ -60,6 +61,7 @@ void run(void) {
     // vec3 pos = {200.0f, 300.0f, 0.0f};
     // vec2 size = {100.0f, 300.0f};
     rot += 0.02;
+    setWindowTitle(&window, "OpenGL Renderer Title");
     drawCube((vec3){0.0f, 0.0f, -10.0f}, rot, (vec3){3.0f, 4.0f, 5.0f},
              COLOR_BLUE);
     // drawQuad(&state->defaultShader, state->colorTexture, pos, 0.0f, size,

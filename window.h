@@ -13,3 +13,4 @@ typedef struct {
 } Window;
 
 Window createWindow(int width, int height, const char *title);
+void setWindowTitle(Window *window, const char *title);

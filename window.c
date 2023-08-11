@@ -1,5 +1,6 @@
 #include "window.h"
 #include "glad/glad.h"
+#include <SDL2/SDL_video.h>
 
 Window createWindow(int width, int height, const char *title) {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -39,3 +40,7 @@ Window createWindow(int width, int height, const char *title) {
   return window;
 }
 
+void setWindowTitle(Window *window, const char *title) {
+  window->title = title;
+  SDL_SetWindowTitle(window->sdlWindow, title);
+}
