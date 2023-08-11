@@ -1,11 +1,34 @@
+#include "../colors.h"
+#include "../mesh.h"
+#include "../primitives_3d.h"
 #include "../renderer.h"
+#include "../renderer_2d.h"
+#include "../renderer_3d.h"
+#include "../sprite.h"
+#include "../window.h"
 #include "stdio.h"
 #include <SDL2/SDL_video.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #define WIDTH 800
 #define HEIGHT 600
 
 static int shouldQuit = 0;
+Window window;
+RenderState *state;
+
+void init(void) {
+  window = createWindow(WIDTH, HEIGHT, "OpenGL Renderer");
+  state = getRenderState();
+  SDL_GetWindowSize(window.sdlWindow, &state->windowWidth,
+                    &state->windowHeight);
+  initRenderer();
+  initRenderer2D();
+  initRenderer3D(state);
+
+  printf("Window size = (%d x %d)\n", state->windowWidth, state->windowHeight);
+}
 
 void handleEvents(SDL_Event *event) {
   while (SDL_PollEvent(event)) {
@@ -20,13 +43,13 @@ void handleEvents(SDL_Event *event) {
   }
 }
 
-void gameLoop(SDL_Window *window) {
-  Sprite sprite;
-  initSprite(&sprite, "textures/car16x16.png",
-             (vec3){0.5f * WIDTH, 0.5f * HEIGHT, 0.0f}, 0.0f,
-             (vec2){10.0, 10.0});
+void run(void) {
+  // Sprite sprite;
+  // initSprite(&sprite, "textures/car16x16.png", (vec3){200.0f, 100.0f, 0.0f},
+             // 0.0f, (vec2){20.0f, 20.0f});
 
-  float triRot = 0.0f;
+  float rot = 0.0f;
+  initCube();
 
   while (!shouldQuit) {
     SDL_Event event;
@@ -34,24 +57,25 @@ void gameLoop(SDL_Window *window) {
 
     renderBegin();
 
-    sprite.rotation += 0.01f;
-    triRot += 0.02f;
-    
-    drawSprite(&sprite);
-    drawTriangle((vec2){WIDTH * 0.7, HEIGHT * 0.6}, triRot, (vec2){60, 60},
-                   (vec4){1.0, 1.0, 0.4, 1.0});
-    drawCircle((vec3){50.0f, 100.0f, 0.0f}, 40.0f, (vec4){1.0f, 1.0f, 1.0f, 1.0f});
+    // vec3 pos = {200.0f, 300.0f, 0.0f};
+    // vec2 size = {100.0f, 300.0f};
+    rot += 0.02;
+    drawCube((vec3){0.0f, 0.0f, -10.0f}, rot, (vec3){3.0f, 4.0f, 5.0f},
+             COLOR_BLUE);
+    // drawQuad(&state->defaultShader, state->colorTexture, pos, 0.0f, size,
+             // COLOR_GREEN);
+    // drawCircle(&state->circleShader, state->colorTexture, pos, 40.0f,
+               // COLOR_RED);
+    // drawSprite(&sprite, &state->defaultShader);
 
-    renderEnd(window);
+    renderEnd(window.sdlWindow);
   }
 }
 
+void cleanUp(void) { SDL_DestroyWindow(window.sdlWindow); }
+
 int main(int argc, char *argv[]) {
-  SDL_Window *window;
-  window = initWindow(800, 600, "Example");
-  initRenderer();
-
-  gameLoop(window);
-
-  SDL_DestroyWindow(window);
+  init();
+  run();
+  cleanUp();
 }
