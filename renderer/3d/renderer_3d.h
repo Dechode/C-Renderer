@@ -12,6 +12,6 @@ typedef struct {
   float far;
 } RenderState3D;
 
-void initRenderer3D(RenderState *state, float near, float far);
-void drawCube(vec3 position, float rotation, vec3 size, vec4 color);
+void initRenderer3D(RenderState *state, float vFov, float near, float far);
+void drawCube(vec3 position, vec3 rotation, float angle, vec3 size, vec4 color);
 void draw(Shader *shader, uint32_t vao, uint32_t indexCount, mat4x4 transform);

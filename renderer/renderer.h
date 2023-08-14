@@ -18,7 +18,6 @@ typedef struct {
 
   uint32_t colorTexture;
 
-  mat4x4 projection;
   Camera camera;
 } RenderState;
 

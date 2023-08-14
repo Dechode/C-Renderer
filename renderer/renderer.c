@@ -7,27 +7,21 @@ static RenderState renderState = {0};
 
 void initRenderer(void) {
 
-  initCamera(&renderState.camera, (vec3){0.0f, 0.0f, 0.0f},
-             (vec3){0.0f, 1.0f, 0.0f}, 0.0f, 0.0f, 5.0f, 0.0f);
-
   renderState.defaultShader =
       createShader("shaders/default.frag.glsl", "shaders/default.vert.glsl");
 
   mat4x4 identityMat4;
   mat4x4_identity(identityMat4);
 
-  mat4x4_ortho(renderState.projection, 0.0f, (float)renderState.windowWidth,
-               0.0f, (float)renderState.windowHeight, -100.0f, 100.0f);
-
   bindShader(renderState.defaultShader.id);
-  setMat4(&renderState.defaultShader, "projection", renderState.projection);
+  setMat4(&renderState.defaultShader, "projection", renderState.camera.projection);
   setMat4(&renderState.defaultShader, "view", identityMat4);
 
   renderState.circleShader =
       createShader("shaders/circle.frag.glsl", "shaders/circle.vert.glsl");
 
   bindShader(renderState.circleShader.id);
-  setMat4(&renderState.circleShader, "projection", renderState.projection);
+  setMat4(&renderState.circleShader, "projection", renderState.camera.projection);
 
   initColorTexture(&renderState.colorTexture);
 

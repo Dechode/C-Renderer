@@ -1,19 +1,40 @@
 #include "camera.h"
+#include <stdint.h>
 
-void initCamera(Camera *camera, vec3 position, vec3 up, float yaw, float pitch,
-                float moveSpeed, float zoom) {
+static void _initCamera(Camera *camera, vec3 position, vec3 up) {
 
   vec3_dup(camera->position, position);
   vec3_dup(camera->up, up);
   vec3_dup(camera->globalUp, up);
   vec3_dup(camera->front, (vec3){0.0f, 0.0f, -1.0f});
 
-  camera->yaw = yaw;
-  camera->pitch = pitch;
-  camera->moveSpeed = moveSpeed;
+  camera->yaw = 0.0f;
+  camera->pitch = 0.0f;
+  camera->moveSpeed = 0.0f;
   camera->mouseSensitivity = 2.0;
-  camera->zoom = zoom;
+  camera->zoom = 0.0f;
 
+  mat4x4 m;
+  mat4x4_identity(m);
+  mat4x4_dup(camera->view, m);
+}
+
+void initCamera3D(Camera *camera, vec3 position, vec3 up, float vFov,
+                  float near, float far, uint32_t windowWidth,
+                  uint32_t windowHeight) {
+
+  _initCamera(camera, position, up);
+  mat4x4_perspective(camera->projection, vFov,
+                     (float)windowWidth / (float)windowHeight, near, far);
+  updateCameraVectors(camera);
+}
+
+void initCamera2D(Camera *camera, vec3 position, vec3 up, uint32_t windowWidth,
+                  uint32_t windowHeight) {
+
+  _initCamera(camera, position, up);
+  mat4x4_ortho(camera->projection, 0.0f, (float)windowWidth, 0.0f,
+               (float)windowHeight, -100.0f, 100.0f);
   updateCameraVectors(camera);
 }
 
@@ -27,12 +48,12 @@ void updateCameraVectors(Camera *camera) {
   if (vec3_len(newFront) > 1.0) {
     vec3_norm(camera->front, newFront);
   }
-  
+
   vec3_mul_cross(newRight, camera->front, camera->globalUp);
   if (vec3_len(newRight) > 1.0) {
     vec3_norm(camera->right, newRight);
   }
-  
+
   vec3_mul_cross(newUp, camera->right, camera->front);
   if (vec3_len(newUp) > 1.0) {
     vec3_norm(camera->up, newUp);
@@ -40,7 +61,16 @@ void updateCameraVectors(Camera *camera) {
 }
 
 void getViewMatrix(mat4x4 result, Camera *camera) {
+  mat4x4_dup(result, camera->view);
+}
+
+void getProjectionMatrix(mat4x4 result, Camera *camera) {
+  mat4x4_dup(result, camera->projection);
+}
+
+void update(Camera *camera) {
+  updateCameraVectors(camera);
   vec3 tmp;
   vec3_add(tmp, camera->position, camera->front);
-  mat4x4_look_at(result, camera->position, tmp, camera->up);
+  mat4x4_look_at(camera->view, camera->position, tmp, camera->up);
 }
