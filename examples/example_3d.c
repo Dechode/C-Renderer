@@ -1,11 +1,9 @@
 #include "../window.h"
 #include "../colors.h"
-#include "../mesh.h"
-#include "../primitives_3d.h"
-#include "../renderer.h"
-#include "../renderer_2d.h"
-#include "../renderer_3d.h"
-#include "../sprite.h"
+// #include "../renderer/3d/mesh.h"
+// #include "../renderer/3d/primitives_3d.h"
+#include "../renderer/renderer.h"
+#include "../renderer/3d/renderer_3d.h"
 #include "../window.h"
 #include "stdio.h"
 #include <SDL2/SDL_video.h>
@@ -25,8 +23,7 @@ void init(void) {
   SDL_GetWindowSize(window.sdlWindow, &state->windowWidth,
                     &state->windowHeight);
   initRenderer();
-  initRenderer2D();
-  initRenderer3D(state);
+  initRenderer3D(state, 0.1f, 100.0f);
 
   printf("Window size = (%d x %d)\n", state->windowWidth, state->windowHeight);
 }
@@ -45,12 +42,9 @@ void handleEvents(SDL_Event *event) {
 }
 
 void run(void) {
-  // Sprite sprite;
-  // initSprite(&sprite, "textures/car16x16.png", (vec3){200.0f, 100.0f, 0.0f},
-             // 0.0f, (vec2){20.0f, 20.0f});
-
   float rot = 0.0f;
-  initCube();
+
+  setWindowTitle(&window, "3D Cube Example");
 
   while (!shouldQuit) {
     SDL_Event event;
@@ -58,17 +52,10 @@ void run(void) {
 
     renderBegin();
 
-    // vec3 pos = {200.0f, 300.0f, 0.0f};
-    // vec2 size = {100.0f, 300.0f};
     rot += 0.02;
-    setWindowTitle(&window, "OpenGL Renderer Title");
+
     drawCube((vec3){0.0f, 0.0f, -10.0f}, rot, (vec3){3.0f, 4.0f, 5.0f},
              COLOR_BLUE);
-    // drawQuad(&state->defaultShader, state->colorTexture, pos, 0.0f, size,
-             // COLOR_GREEN);
-    // drawCircle(&state->circleShader, state->colorTexture, pos, 40.0f,
-               // COLOR_RED);
-    // drawSprite(&sprite, &state->defaultShader);
 
     renderEnd(window.sdlWindow);
   }

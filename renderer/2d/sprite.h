@@ -1,8 +1,8 @@
 #pragma once
 
-#include "shader.h"
-#include "linmath.h"
-#include "texture.h"
+#include "../shader.h"
+// #include "../../math/linmath.h"
+#include "../texture.h"
 
 typedef struct {
   float rotation;

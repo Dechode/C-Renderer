@@ -1,7 +1,7 @@
 #pragma once
 
-#include "glad/glad.h"
-#include "linmath.h"
+#include "../glad/glad.h"
+#include "../math/linmath.h"
 
 typedef struct {
   vec3 position;

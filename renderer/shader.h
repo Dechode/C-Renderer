@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glad/glad.h"
-#include "linmath.h"
-#include "max_values.h"
+#include "../glad/glad.h"
+#include "../math/linmath.h"
+#include "../max_values.h"
 #include <stdint.h>
 
 typedef struct {

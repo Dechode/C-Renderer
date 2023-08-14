@@ -1,7 +1,7 @@
 #include "sprite.h"
-#include "colors.h"
-#include "glad/glad.h"
-#include "renderer.h"
+#include "../../colors.h"
+// #include "glad/glad.h"
+// #include "renderer.h"
 #include "renderer_2d.h"
 
 void initSprite(Sprite *sprite, const char *texturePath, vec3 pos,

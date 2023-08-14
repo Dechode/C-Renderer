@@ -2,5 +2,5 @@
 
 set -xe
 
-gcc -Wall -Wextra -o example examples/example.c renderer.c renderer_2d.c renderer_3d.c primitives_3d.c glad.c io.c shader.c texture.c sprite.c window.c mesh.c camera.c -lSDL2main -lSDL2 -lSDL2_image -lm
+gcc -Wall -Wextra -o example_3d examples/example_3d.c renderer/renderer.c renderer/3d/renderer_3d.c glad.c io.c renderer/shader.c renderer/texture.c window.c renderer/3d/mesh.c renderer/camera.c -lSDL2main -lSDL2 -lSDL2_image -lm
 

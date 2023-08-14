@@ -1,9 +1,9 @@
 #include "texture.h"
-#include "glad/glad.h"
+#include "../glad/glad.h"
 #include <string.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "../stb_image.h"
 
 void initImageTexture(Texture *texture, const char *path) {
   texture->textureData = NULL;

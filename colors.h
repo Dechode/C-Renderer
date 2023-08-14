@@ -1,6 +1,6 @@
 #pragma once
 
-#include "linmath.h"
+#include "math/linmath.h"
 
 #define COLOR_WHITE   (vec4) {1.0f, 1.0f, 1.0f, 1.0f}
 #define COLOR_BLACK   (vec4) {0.0f, 0.0f, 0.0f, 1.0f}

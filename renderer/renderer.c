@@ -1,8 +1,5 @@
 #include "renderer.h"
 #include "camera.h"
-#include "colors.h"
-#include "glad/glad.h"
-#include "linmath.h"
 #include "shader.h"
 #include "texture.h"
 

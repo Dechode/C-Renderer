@@ -1,6 +1,6 @@
 #include "shader.h"
-#include "glad/glad.h"
-#include "io.h"
+// #include "glad/glad.h"
+#include "../io.h"
 #include <stdio.h>
 #include <string.h>
 

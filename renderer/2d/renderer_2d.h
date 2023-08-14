@@ -1,8 +1,8 @@
 #pragma once
 
-#include "glad/glad.h"
-#include "linmath.h"
-#include "shader.h"
+#include "../../glad/glad.h"
+#include "../../math/linmath.h"
+#include "../shader.h"
 
 typedef struct {
   uint32_t quadVao;

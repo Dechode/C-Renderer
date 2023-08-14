@@ -1,6 +1,6 @@
 #include "renderer_2d.h"
-#include "glad/glad.h"
-#include "shader.h"
+// #include "glad/glad.h"
+// #include "shader.h"
 #include <stdint.h>
 #include <stdio.h>
 

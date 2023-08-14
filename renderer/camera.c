@@ -1,5 +1,4 @@
 #include "camera.h"
-#include "linmath.h"
 
 void initCamera(Camera *camera, vec3 position, vec3 up, float yaw, float pitch,
                 float moveSpeed, float zoom) {

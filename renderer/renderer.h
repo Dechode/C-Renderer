@@ -3,9 +3,9 @@
 #include <SDL2/SDL.h>
 #include <stdint.h>
 
-#include "glad/glad.h"
-#include "linmath.h"
-#include "window.h"
+#include "../glad/glad.h"
+#include "../math/linmath.h"
+#include "../window.h"
 #include "shader.h"
 #include "camera.h"
 
