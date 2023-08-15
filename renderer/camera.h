@@ -14,10 +14,6 @@ typedef struct {
 
   float yaw;
   float pitch;
-
-  float moveSpeed;
-  float mouseSensitivity;
-  float zoom;
 } Camera;
 
 void initCamera2D(Camera *camera, vec3 position, vec3 up, uint32_t windowWidth,
@@ -25,7 +21,5 @@ void initCamera2D(Camera *camera, vec3 position, vec3 up, uint32_t windowWidth,
 void initCamera3D(Camera *camera, vec3 position, vec3 up, float vFov,
                   float near, float far, uint32_t windowWidth,
                   uint32_t windowHeight);
-void getViewMatrix(mat4x4 result, Camera *camera);
-void getProjectionMatrix(mat4x4 result, Camera *camera);
 void updateCameraVectors(Camera *camera);
-void update(Camera *camera);
+void updateCamera(Camera *camera);
