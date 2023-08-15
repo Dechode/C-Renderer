@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../max_values.h"
+#include "../math/linmath.h"
 #include <stdint.h>
 
 typedef enum {
@@ -19,5 +20,5 @@ typedef struct {
 } Texture;
 
 void initImageTexture(Texture *texture, const char *path);
-void initColorTexture(uint32_t *textureID);
+void initColorTexture(Texture *texture, vec4 color);
 

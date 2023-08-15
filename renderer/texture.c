@@ -1,5 +1,6 @@
 #include "texture.h"
 #include "../glad/glad.h"
+#include <stdint.h>
 #include <string.h>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -35,18 +36,25 @@ void initImageTexture(Texture *texture, const char *path) {
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texture->width, texture->height, 0,
                GL_RGBA, GL_UNSIGNED_BYTE, texture->textureData);
   glGenerateMipmap(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D, texture->id);
 
   stbi_image_free(texture->textureData);
+  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void initColorTexture(uint32_t *textureID) {
+void initColorTexture(Texture *texture, vec4 color) {
+  texture->textureData = NULL;
+  texture->width = 1;
+  texture->height = 1;
+  texture->numChannels = 0;
+  strcpy(texture->path, "");
 
-  glGenTextures(1, textureID);
-  glBindTexture(GL_TEXTURE_2D, *textureID);
+  glGenTextures(1, &texture->id);
+  glBindTexture(GL_TEXTURE_2D, texture->id);
 
-  uint8_t solidWhite[4] = {255, 255, 255, 255};
+  uint8_t solidColor[4] = {(uint8_t)(255.0f * color[0]), (uint8_t)(color[1] * 255.0f),
+                           (uint8_t)(color[2] * 255.0f), (uint8_t)(color[3] * 255.0f)};
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-               solidWhite);
+               solidColor);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
