@@ -114,7 +114,7 @@ void drawQuadLine(Shader *shader, uint32_t textureID, vec2 pos, vec2 size,
   drawLine(shader, textureID, points[3], points[0], color, lineWidth);
 }
 
-void drawQuad(Shader *shader, uint32_t textureID, vec3 pos, float rotation,
+void drawQuad(Shader *shader, Texture *texture, vec3 pos, float rotation,
               vec2 size, vec4 color) {
 
   bindShader(shader->id);
@@ -130,13 +130,13 @@ void drawQuad(Shader *shader, uint32_t textureID, vec3 pos, float rotation,
   setFloat4(shader, "color", color);
 
   glBindVertexArray(_state2D.quadVao);
-  glBindTexture(GL_TEXTURE_2D, textureID);
+  glBindTexture(GL_TEXTURE_2D, texture->id);
 
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
   glBindVertexArray(0);
 }
 
-void drawTriangle(Shader *shader, uint32_t textureID, vec3 pos, float rotation,
+void drawTriangle(Shader *shader, Texture *texture, vec3 pos, float rotation,
                   vec2 size, vec4 color) {
 
   bindShader(shader->id);
@@ -152,14 +152,14 @@ void drawTriangle(Shader *shader, uint32_t textureID, vec3 pos, float rotation,
   setFloat4(shader, "color", color);
 
   glBindVertexArray(_state2D.triangleVao);
-  glBindTexture(GL_TEXTURE_2D, textureID);
+  glBindTexture(GL_TEXTURE_2D, texture->id);
   glDrawArrays(GL_TRIANGLES, 0, 3);
   glBindVertexArray(0);
 }
 
-void drawCircle(Shader *shader, uint32_t textureID, vec3 pos, float radius,
+void drawCircle(Shader *shader, Texture *texture, vec3 pos, float radius,
                 vec4 color) {
 
   vec2 size = {2.0f * radius, 2.0f * radius};
-  drawQuad(shader, textureID, pos, 0.0f, size, color);
+  drawQuad(shader, texture, pos, 0.0f, size, color);
 }

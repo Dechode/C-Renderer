@@ -3,6 +3,7 @@
 #include "../../glad/glad.h"
 #include "../../math/linmath.h"
 #include "../shader.h"
+#include "../texture.h"
 
 typedef struct {
   uint32_t quadVao;
@@ -25,9 +26,9 @@ void drawLine(Shader *shader, uint32_t textureID, vec2 start, vec2 end,
               vec4 color, int lineWidth);
 void drawQuadLine(Shader *shader, uint32_t textureID, vec2 pos, vec2 size,
                   vec4 color, int lineWidth);
-void drawQuad(Shader *shader, uint32_t textureID, vec3 pos, float rotation,
+void drawQuad(Shader *shader, Texture *texture, vec3 pos, float rotation,
               vec2 size, vec4 color);
-void drawCircle(Shader *shader, uint32_t textureID, vec3 pos, float radius,
+void drawCircle(Shader *shader, Texture *texture, vec3 pos, float radius,
                 vec4 color);
-void drawTriangle(Shader *shader, uint32_t textureID, vec3 pos, float rotation,
+void drawTriangle(Shader *shader, Texture *texture, vec3 pos, float rotation,
                   vec2 size, vec4 color);

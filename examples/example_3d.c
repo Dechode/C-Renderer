@@ -1,6 +1,7 @@
 #include "../colors.h"
 #include "../renderer/3d/renderer_3d.h"
 #include "../renderer/renderer.h"
+#include "../renderer/texture.h"
 #include "../window.h"
 #include "stdio.h"
 #include <SDL2/SDL_events.h>
@@ -8,8 +9,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define WIDTH 800
-#define HEIGHT 600
+#define WIDTH 1280
+#define HEIGHT 720
 
 static int shouldQuit = 0;
 Window window;
@@ -41,6 +42,16 @@ void handleEvents(SDL_Event *event) {
 
 void run(void) {
   float rot = 0.0f;
+  RenderState3D *_state3D = getRenderState3D();
+
+  Texture woodTexture, colorTexture, specularTexture;
+  initImageTexture(&woodTexture, "textures/wood_tile16x16.png");
+  initColorTexture(&colorTexture, COLOR_WHITE);
+  initColorTexture(&specularTexture, COLOR_WHITE);
+
+  Material material, material2 = {0};
+  initMaterial(&material, &_state3D->lightingShader, &woodTexture, &specularTexture, 0.4f);
+  initMaterial(&material2, &_state3D->lightingShader, &colorTexture, &specularTexture, 0.4f);
 
   setWindowTitle(&window, "3D Cube Example");
 
@@ -48,21 +59,30 @@ void run(void) {
     SDL_Event event;
     handleEvents(&event);
 
-    rot += 0.02;
+    rot += 0.01;
 
     renderBegin();
 
-    drawCube((vec3){0.0f, 0.0f, -10.0f}, (vec3){0.0f, 1.0f, 0.0f}, 
-            rot, (vec3){3.0f, 4.0f, 5.0f}, COLOR_BLUE);
+    updateCamera(&state->camera);
+
+    drawCube(&material, (vec3){0.0f, 0.0f, -10.0f}, (vec3){1.0f, 0.5f, 0.5f},
+             rot, (vec3){1.0f, 1.0f, 1.0f});
+
+    drawCube(&material2, (vec3){1.0f, 3.0f, -10.0f}, (vec3){1.0f, -0.5f, -0.5f},
+             rot, (vec3){1.0f, 1.0f, 1.0f});
 
     renderEnd(window.sdlWindow);
   }
 }
 
-void cleanUp(void) { SDL_DestroyWindow(window.sdlWindow); }
+void clean(void) {
+  // Clean everything here
+  SDL_DestroyWindow(window.sdlWindow);
+}
 
 int main(int argc, char *argv[]) {
   init();
   run();
-  cleanUp();
+  clean();
+  return 0;
 }

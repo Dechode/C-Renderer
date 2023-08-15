@@ -1,7 +1,5 @@
 #include "sprite.h"
 #include "../../colors.h"
-// #include "glad/glad.h"
-// #include "renderer.h"
 #include "renderer_2d.h"
 
 void initSprite(Sprite *sprite, const char *texturePath, vec3 pos,
@@ -23,6 +21,6 @@ void initSprite(Sprite *sprite, const char *texturePath, vec3 pos,
 }
 
 void drawSprite(Sprite *sprite, Shader *shader) {
-  drawQuad(shader, sprite->texture.id, sprite->position, sprite->rotation,
+  drawQuad(shader, &sprite->texture, sprite->position, sprite->rotation,
            sprite->size, COLOR_WHITE);
 }

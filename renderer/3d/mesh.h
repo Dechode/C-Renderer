@@ -8,7 +8,7 @@
 
 typedef struct {
   vec3 positions;
-  // vec3 normals;
+  vec3 normals;
   vec2 uvs;
 } Vertex;
 

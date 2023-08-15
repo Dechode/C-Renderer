@@ -7,6 +7,7 @@
 #include "../math/linmath.h"
 #include "../window.h"
 #include "shader.h"
+#include "texture.h"
 #include "camera.h"
 
 typedef struct {
@@ -16,7 +17,8 @@ typedef struct {
   Shader defaultShader;
   Shader circleShader;
 
-  uint32_t colorTexture;
+  // uint32_t colorTexture;
+  Texture colorTexture;
 
   Camera camera;
 } RenderState;
