@@ -1,4 +1,6 @@
 #include "../colors.h"
+#include "../obj_loader.h"
+#include "../renderer/3d/mesh.h"
 #include "../renderer/3d/renderer_3d.h"
 #include "../renderer/renderer.h"
 #include "../renderer/texture.h"
@@ -45,15 +47,21 @@ void run(void) {
   RenderState3D *_state3D = getRenderState3D();
 
   Texture woodTexture, colorTexture, specularTexture;
-  initImageTexture(&woodTexture, "textures/wood_tile16x16.png");
+  initImageTexture(&woodTexture, "textures/brick.png");
   initColorTexture(&colorTexture, COLOR_WHITE);
   initColorTexture(&specularTexture, COLOR_WHITE);
 
   Material material, material2 = {0};
-  initMaterial(&material, &_state3D->lightingShader, &woodTexture, &specularTexture, 0.4f);
-  initMaterial(&material2, &_state3D->lightingShader, &colorTexture, &specularTexture, 0.4f);
+  initMaterial(&material, &_state3D->lightingShader, &woodTexture,
+  &specularTexture, 0.4f);
+  initMaterial(&material2, &_state3D->lightingShader, &colorTexture,
+               &specularTexture, 0.4f);
 
-  setWindowTitle(&window, "3D Cube Example");
+  Mesh *objMesh = loadObj("obj/torus.obj");
+  initMesh(objMesh, objMesh->vertices, objMesh->indices, objMesh->vertexCount,
+           objMesh->indexCount);
+  
+  setWindowTitle(&window, "3D Example");
 
   while (!shouldQuit) {
     SDL_Event event;
@@ -65,11 +73,9 @@ void run(void) {
 
     updateCamera(&state->camera);
 
-    drawCube(&material, (vec3){0.0f, 0.0f, -10.0f}, (vec3){1.0f, 0.5f, 0.5f},
-             rot, (vec3){1.0f, 1.0f, 1.0f});
-
-    drawCube(&material2, (vec3){1.0f, 3.0f, -10.0f}, (vec3){1.0f, -0.5f, -0.5f},
-             rot, (vec3){1.0f, 1.0f, 1.0f});
+    drawMesh(objMesh, &material, (vec3){0.0f, 0.0f, -6.0f}, (vec3){1.0f,
+    1.0f, 0.0f}, rot);
+    drawCube(&material, (vec3){5.5f, 0.0f, -15.0f}, (vec3){0.0f, 0.0f, 1.0f}, rot, (vec3){2.0f, 2.0f, 2.0f});
 
     renderEnd(window.sdlWindow);
   }
