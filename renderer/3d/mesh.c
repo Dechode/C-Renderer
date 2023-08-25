@@ -1,16 +1,26 @@
 #include "mesh.h"
-#include "renderer_3d.h"
 #include "../texture.h"
+#include "renderer_3d.h"
 #include <stddef.h>
 #include <stdint.h>
 
 void initMesh(Mesh *mesh, Vertex vertices[], uint32_t indices[],
               uint32_t vertexCount, uint32_t indexCount) {
 
-  memcpy(&mesh->vertices, vertices, (size_t)sizeof(Vertex) * vertexCount);
-  memcpy(&mesh->indices, indices, (size_t)sizeof(uint32_t) * indexCount);
-  mesh->vertexCount = vertexCount;
+  if (!vertexCount) {
+    printf("No vertice data found when initializing mesh!\n");
+    return;
+  }
+  // memcpy((void*)&mesh->vertices, vertices, (size_t)sizeof(Vertex) * vertexCount);
+
+  // if (indexCount <= 0) {
+    // printf("No index data found when initializing mesh!\n");
+    // return;
+  // }
+  // memcpy((void*)&mesh->indices, indices, (size_t)sizeof(uint32_t) * indexCount);
+
   mesh->indexCount = indexCount;
+  mesh->vertexCount = vertexCount;
 
   glGenVertexArrays(1, &mesh->vao);
   glGenBuffers(1, &mesh->vbo);
@@ -22,22 +32,26 @@ void initMesh(Mesh *mesh, Vertex vertices[], uint32_t indices[],
   glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), &vertices[0],
                GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(uint32_t),
-               &indices[0], GL_STATIC_DRAW);
+  if (indexCount) {
 
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(uint32_t),
+                 &indices[0], GL_STATIC_DRAW);
+  }
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
-  // glEnableVertexAttribArray(1);
-  // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-  //                       (void *)offsetof(Vertex, normals));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                        (void *)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                        (void *)offsetof(Vertex, uvs));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
+                        (void *)(6 * sizeof(float)));
+  glEnableVertexAttribArray(2);
 
   glBindVertexArray(0);
 }
 
-void drawMesh(Mesh *mesh, Shader *shader) {
-  draw(shader, mesh->vao, mesh->indexCount, mesh->transMat);
+void drawMesh(Mesh *mesh, Material *material, vec3 position, vec3 rotation,
+              float angle) {
+  drawArray(material, position, rotation, angle, mesh->vao, mesh->vertexCount);
 }
