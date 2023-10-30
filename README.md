@@ -1,3 +1,6 @@
-# Simple C Renderer
+# C Renderer
 
-Simple OpenGL renderer written in c.
+Simple 2D and 3D OpenGL renderer written in C.
+Has phong shading and simple obj loader.
+
+![My Image](images/screenshot_3d_example.png)
